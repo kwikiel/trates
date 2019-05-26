@@ -16,3 +16,7 @@ def hello_world():
 
    
     return render_template('index.html', c=compound2_dai, d=dydx, l=lever)
+
+@app.route('/charts')
+def charts():
+    return render_template("charts.html")
