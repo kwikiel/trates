@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 import json
 import requests
 import datetime
+import psycopg2
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI']='postgres://mkiizzsexpqbeb:853ead1f17f3dc191da7a0149c247920e39f8e0f7d89402dce983ae2af478fe1@ec2-54-235-114-242.compute-1.amazonaws.com:5432/d553bngfbfj4ov'
@@ -74,12 +75,19 @@ def data():
     lever = round(r.json()[3]["supply"][1]["rate"]*100, 2)
     
     c = DataPoint(date=datetime.datetime.now(), value=compound2_dai, name="Compound")
-    db.session.add(c)
     d = DataPoint(date=datetime.datetime.now(), value=dydx, name="dYdX")
-    db.session.add(d)
     e = DataPoint(date=datetime.datetime.now(), value=lever, name="Dharma Lever")
-    db.session.add(e)
-    db.session.commit()
+    
+    last = DataPoint.query.filter(DataPoint.name=="Dharma Lever").order_by(DataPoint.date.desc())[0].date
+    if(datetime.datetime.now().strftime('%Y-%m-%d')==last.strftime('%Y-%m-%d')):
+        db.session.rollback()
+        return json.dumps({'Already existing':True}), 200, {'ContentType':'application/json'}
+    else:
+        db.session.add(c)
+        db.session.add(d)
+        db.session.add(e)
+        db.session.commit()
+ 
     return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
 
             
