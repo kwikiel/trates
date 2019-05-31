@@ -6,7 +6,9 @@ import requests
 import datetime
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'DATABASE_URL'
+
+# DATABASE_URL
 
 db = SQLAlchemy(app)
 
