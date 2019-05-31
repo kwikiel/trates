@@ -1,7 +1,9 @@
 from flask import Flask
 from flask import render_template
 from flask_sqlalchemy import SQLAlchemy
+import json
 import requests
+import datetime
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
@@ -33,14 +35,54 @@ def hello_world():
 
 @app.route('/charts')
 def charts():
-    foo = ['x', '2013-01-01', '2013-01-02', '2013-01-03', '2013-01-04', '2013-01-05', '2013-01-06']
-    baz = ['Bazzinga', 100, 200, 300, 400, 500, 1337]
-
     
-    return render_template("charts.html", foo=foo, baz=baz)
+    kek = DataPoint.query.filter(DataPoint.name=="Dharma Lever")
+    dates = []
+    dvalues = []
+    for k in kek:
+        dates.append(k.date.strftime('%Y-%m-%d'))
+        dvalues.append(k.value)
+    d = ["x"] + sorted(dates)
+    v = ["Dharma Lever"] + dvalues
+    
+    kek = DataPoint.query.filter(DataPoint.name=="Compound")
+    dates = []
+    dvalues = []
+    for k in kek:
+        dates.append(k.date.strftime('%Y-%m-%d'))
+        dvalues.append(k.value)
+    c = ["Compound"] + dvalues
+    
+    kek = DataPoint.query.filter(DataPoint.name=="dYdX")
+    dates = []
+    dvalues = []
+    for k in kek:
+        dates.append(k.date.strftime('%Y-%m-%d'))
+        dvalues.append(k.value)
+    dx = ["dYdX"] + dvalues
+    
+    return render_template("charts.html", xdates=d, dharma_values=v, compound_values=c, dydx_values=dx)
 
 
-@app.route("/data")
+@app.route("/process")
 def data():
-    foo = ['x', '20130101', '20130102', '20130103', '20130104', '20130105', '20130106']
-    return render_template("data.html", foo=foo)
+    headers = {"content-type": "application/json", "x-api-key":"KQUl7wEC9y8UTIU30zR71670L5iKpVl18XFD5Iqd"}
+
+    r = requests.get("https://api.loanscan.io/v1/interest-rates", headers=headers)
+    compound2_dai = round(r.json()[1]["borrow"][3]["rate"]*100, 2)
+    dydx = round(r.json()[7]["supply"][1]["rate"]*100, 2)
+    lever = round(r.json()[3]["supply"][1]["rate"]*100, 2)
+    
+    c = DataPoint(date=datetime.datetime.now(), value=compound2_dai, name="Compound")
+    db.session.add(c)
+    d = DataPoint(date=datetime.datetime.now(), value=dydx, name="dYdX")
+    db.session.add(d)
+    e = DataPoint(date=datetime.datetime.now(), value=lever, name="Dharma Lever")
+    db.session.add(e)
+    db.session.commit()
+    return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
+
+            
+                  
+                 
+

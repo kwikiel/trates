@@ -10,7 +10,7 @@
 
 <body>
 
-<h1> Hello Charts! </h1>
+<h1> Interdefi Charts! </h1>
 
 <div id="chart"></div>
 
@@ -21,14 +21,10 @@ var chart = c3.generate({
 //        xFormat: '%Y%m%d', // 'xFormat' can be used as custom format of 'x'
         columns: [
             
-            {{ foo|safe }} 
-
-            ,
-            ['Compound', 30, 200, 100, 400, 150],
-            ['Dharma Lever', 130, 340, 200, 500, 250, 350],
-            ['dYdX', 5 ,10, 15, 20, 300, 150, 200, 100],
-
-            {{ baz|safe }} 
+            {{ xdates|safe }} , // data + x 
+            {{ dharma_values|safe }},  // dataseries
+            {{ compound_values|safe }},
+            {{ dydx_values | safe }}
         ]
     },
     axis: {
