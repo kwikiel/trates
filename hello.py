@@ -31,8 +31,11 @@ def hello_world():
     dydx = round(r.json()[7]["supply"][1]["rate"]*100, 2)
     lever = round(r.json()[3]["supply"][1]["rate"]*100, 2)
 
+
+    dipor = round(((compound2_dai+dydx+lever)/3.0),2)
+
    
-    return render_template('index.html', c=compound2_dai, d=dydx, l=lever)
+    return render_template('index.html', c=compound2_dai, d=dydx, l=lever, dipor=dipor)
 
 @app.route('/charts')
 def charts():
@@ -61,8 +64,18 @@ def charts():
         dates.append(k.date.strftime('%Y-%m-%d'))
         dvalues.append(k.value)
     dx = ["dYdX"] + dvalues
+
+
+
+    kek = DataPoint.query.filter(DataPoint.name=="Dipor")
+    dates = []
+    dvalues = []
+    for k in kek:
+        dates.append(k.date.strftime('%Y-%m-%d'))
+        dvalues.append(k.value)
+    dipor = ["Dipor"] + dvalues
     
-    return render_template("charts.html", xdates=d, dharma_values=v, compound_values=c, dydx_values=dx)
+    return render_template("charts.html", xdates=d, dharma_values=v, compound_values=c, dydx_values=dx, dipor_values=dipor)
 
 
 @app.route("/process")
@@ -77,6 +90,13 @@ def data():
     c = DataPoint(date=datetime.datetime.now(), value=compound2_dai, name="Compound")
     d = DataPoint(date=datetime.datetime.now(), value=dydx, name="dYdX")
     e = DataPoint(date=datetime.datetime.now(), value=lever, name="Dharma Lever")
+
+
+    dipor = round(((compound2_dai+dydx+lever)/3.0),2)
+
+    dipor2 = DataPoint(date=datetime.datetime.now(), value=dipor, name="Dipor")
+
+
     
     last = DataPoint.query.filter(DataPoint.name=="Dharma Lever").order_by(DataPoint.date.desc())[0].date
     if(datetime.datetime.now().strftime('%Y-%m-%d')==last.strftime('%Y-%m-%d')):
@@ -86,6 +106,8 @@ def data():
         db.session.add(c)
         db.session.add(d)
         db.session.add(e)
+
+        db.session.add(dipor2)
         db.session.commit()
  
     return json.dumps({'success':True}), 200, {'ContentType':'application/json'}

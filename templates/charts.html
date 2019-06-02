@@ -24,7 +24,8 @@ var chart = c3.generate({
             {{ xdates|safe }} , // data + x 
             {{ dharma_values|safe }},  // dataseries
             {{ compound_values|safe }},
-            {{ dydx_values | safe }}
+            {{ dydx_values|safe }},
+            {{ dipor_values|safe }} 
         ]
     },
     axis: {
