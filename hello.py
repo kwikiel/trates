@@ -20,16 +20,25 @@ class DataPoint(db.Model):
     def __repr__(self):
         return "<#{id} {date} {name}:  {value}>".format(id=self.id, date=self.date, name=self.name,value=self.value)
 
-
+def get_supply_rates(provider, symbol, data):
+    for i in data:
+        try:
+            if(i["provider"]==provider):
+                for k in(i["supply"]):
+                    if(k["symbol"]==symbol):
+                        return k["rate"]
+        except: 
+            print("Could not obtain the rate")
 
 @app.route('/')
 def hello_world():
     headers = {"content-type": "application/json", "x-api-key": "KQUl7wEC9y8UTIU30zR71670L5iKpVl18XFD5Iqd"}
 
     r = requests.get("https://api.loanscan.io/v1/interest-rates", headers=headers)
-    compound2_dai = round(r.json()[1]["supply"][3]["rate"]*100, 2)
-    dydx = round(r.json()[7]["supply"][1]["rate"]*100, 2)
-    lever = round(r.json()[3]["supply"][1]["rate"]*100, 2)
+
+    compound2_dai = round(100*get_supply_rates("CompoundV2", "DAI", r.json()),2)
+    dydx = round(100*get_supply_rates("dYdX", "DAI", r.json()),2)
+    lever = round(100*get_supply_rates("Lever", "DAI", r.json()),2)
 
 
     dipor = round(((compound2_dai+dydx+lever)/3.0),2)
@@ -83,9 +92,9 @@ def data():
     headers = {"content-type": "application/json", "x-api-key":"KQUl7wEC9y8UTIU30zR71670L5iKpVl18XFD5Iqd"}
 
     r = requests.get("https://api.loanscan.io/v1/interest-rates", headers=headers)
-    compound2_dai = round(r.json()[1]["supply"][3]["rate"]*100, 2)
-    dydx = round(r.json()[7]["supply"][1]["rate"]*100, 2)
-    lever = round(r.json()[3]["supply"][1]["rate"]*100, 2)
+    compound2_dai = round(100*get_supply_rates("CompoundV2", "DAI", r.json()),2)
+    dydx = round(100*get_supply_rates("dYdX", "DAI", r.json()),2)
+    lever = round(100*get_supply_rates("Lever", "DAI", r.json()),2)
     
     c = DataPoint(date=datetime.datetime.now(), value=compound2_dai, name="Compound")
     d = DataPoint(date=datetime.datetime.now(), value=dydx, name="dYdX")
