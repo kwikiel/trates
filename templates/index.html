@@ -7,22 +7,25 @@
 <body>
 <h1> Track interest rates (DAI)</h1>
 
-<b> Compound v2 </b> {{ c }} % </br> 
-<b> dYdX </b> {{ d }}  %</br> 
-<b> Dharma Lever </b> {{ l }} % </br> 
+
+{% for item in rates %}
+<b>{{ item[0] }} </b> {{ item[1] }}% <br> 
+{% endfor %} 
+
 
 <a href="http://www.trackato.com/charts">Interest rates chart</a>
 
-<h2>DIPOR prototype </h2>
+<br>
 
-<b> DIPOR </b> {{ dipor }} % </br>
+
 
 <i>Things above are experimental - standard disclaimer apply <i>
 
 
 
+
 <footer>
-Data by Loanscan <a href="https://loanscan.io"> Loanscan data </a>
+Data provided by LoanScan.io DeFi API<a href="https://loanscan.io">Loanscan DeFI API </a>
 </footer>
 </body>
 </html>

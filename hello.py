@@ -6,9 +6,12 @@ import requests
 import datetime
 import psycopg2
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI']='postgres://mkiizzsexpqbeb:853ead1f17f3dc191da7a0149c247920e39f8e0f7d89402dce983ae2af478fe1@ec2-54-235-114-242.compute-1.amazonaws.com:5432/d553bngfbfj4ov'
+from sqlalchemy import create_engine
 
+app = Flask(__name__)
+#TODO move this key to ENV 
+app.config['SQLALCHEMY_DATABASE_URI']='postgres://mkiizzsexpqbeb:853ead1f17f3dc191da7a0149c247920e39f8e0f7d89402dce983ae2af478fe1@ec2-54-235-114-242.compute-1.amazonaws.com:5432/d553bngfbfj4ov'
+engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
 db = SQLAlchemy(app)
 
 class DataPoint(db.Model):
@@ -30,21 +33,21 @@ def get_supply_rates(provider, symbol, data):
         except: 
             print("Could not obtain the rate")
 
+def raw_sql(query):
+    with engine.connect() as con:
+        rs = con.execute(query)
+    result = []
+    for r in rs:
+        result.append(r)
+    return result 
+
 @app.route('/')
 def hello_world():
-    headers = {"content-type": "application/json", "x-api-key": "KQUl7wEC9y8UTIU30zR71670L5iKpVl18XFD5Iqd"}
-
-    r = requests.get("https://api.loanscan.io/v1/interest-rates", headers=headers)
-
-    compound2_dai = round(100*get_supply_rates("CompoundV2", "DAI", r.json()),2)
-    dydx = round(100*get_supply_rates("dYdX", "DAI", r.json()),2)
-    lever = round(100*get_supply_rates("Lever", "DAI", r.json()),2)
-
-
-    dipor = round(((compound2_dai+dydx+lever)/3.0),2)
-
+    rates = raw_sql('SELECT name,value FROM data_point \
+                      ORDER BY date DESC, value DESC \
+                      LIMIT (SELECT COUNT(DISTINCT name) FROM data_point)')
    
-    return render_template('index.html', c=compound2_dai, d=dydx, l=lever, dipor=dipor)
+    return render_template('index.html',rates=rates)
 
 @app.route('/charts')
 def charts():
@@ -120,8 +123,3 @@ def data():
         db.session.commit()
  
     return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
-
-            
-                  
-                 
-
