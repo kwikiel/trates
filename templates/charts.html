@@ -6,7 +6,8 @@
 <!-- Load d3.js and c3.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.9.2/d3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.0/c3.js"></script>
-
+</script>
+<link href="https://fonts.googleapis.com/css?family=Questrial&display=swap" rel="stylesheet">
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-142594305-1"></script>
 <script>
@@ -16,15 +17,38 @@
 
   gtag('config', 'UA-142594305-1');
 </script>
+<style>
+body {
+font-family: 'Questrial', sans-serif;
+}
 
+
+.card {
+margin: 20px;
+padding: 50px;
+	/* Add shadows to create the "card" effect */
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+}
+
+/* On mouse-over, add a deeper shadow */
+.card:hover {
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+/* Add some padding inside the card container */
+.container {
+  padding: 2px 16px;
+}
+</style>
 </head>
 
 <body>
 
 <h1> DIPOR DeFi charts. </h1>
-
+<div class="card">
 <div id="chart"></div>
-
+</div>
 <script>
 var chart = c3.generate({
     data: {
