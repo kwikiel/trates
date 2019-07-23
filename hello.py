@@ -43,11 +43,14 @@ def raw_sql(query):
 
 @app.route('/')
 def hello_world():
+    r = requests.get("https://ethgasstation.info/json/ethgasAPI.json")
+
+    safe_low_price = r.json()["safeLow"]
     rates = raw_sql('SELECT name,value FROM data_point \
                       ORDER BY date DESC, value DESC \
                       LIMIT (SELECT COUNT(DISTINCT name) FROM data_point)')
    
-    return render_template('index.html',rates=rates)
+    return render_template('index.html',rates=rates, safe_low_price = safe_low_price)
 
 @app.route('/charts')
 def charts():
@@ -107,8 +110,6 @@ def data():
     dipor = round(((compound2_dai+dydx+lever)/3.0),2)
 
     dipor2 = DataPoint(date=datetime.datetime.now(), value=dipor, name="Dipor")
-
-
     
     last = DataPoint.query.filter(DataPoint.name=="Dharma Lever").order_by(DataPoint.date.desc())[0].date
     if(datetime.datetime.now().strftime('%Y-%m-%d')==last.strftime('%Y-%m-%d')):
