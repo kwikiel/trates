@@ -45,7 +45,7 @@ def raw_sql(query):
 def hello_world():
     r = requests.get("https://ethgasstation.info/json/ethgasAPI.json")
 
-    safe_low_price = r.json()["safeLow"]
+    safe_low_price = r.json()["safeLowWai"]/10
     rates = raw_sql('SELECT name,value FROM data_point \
                       ORDER BY date DESC, value DESC \
                       LIMIT (SELECT COUNT(DISTINCT name) FROM data_point)')
