@@ -10,7 +10,7 @@ from sqlalchemy import create_engine
 
 app = Flask(__name__)
 #TODO move this key to ENV 
-app.config['SQLALCHEMY_DATABASE_URI']='postgres://mkiizzsexpqbeb:853ead1f17f3dc191da7a0149c247920e39f8e0f7d89402dce983ae2af478fe1@ec2-54-235-114-242.compute-1.amazonaws.com:5432/d553bngfbfj4ov'
+app.config['SQLALCHEMY_DATABASE_URI']=os.environ['DATABASE_URL']
 engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
 db = SQLAlchemy(app)
 
