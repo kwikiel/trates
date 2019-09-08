@@ -57,7 +57,8 @@ def hello_world():
 @app.route('/charts')
 def charts():
     
-    kek = DataPoint.query.filter(DataPoint.name=="Dharma Lever")
+    # This is for data points
+    kek = DataPoint.query.filter(DataPoint.name=="Compound")
     dates = []
     dvalues = []
     for k in kek:
