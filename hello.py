@@ -103,25 +103,24 @@ def data():
     r = requests.get("https://api.loanscan.io/v1/interest-rates", headers=headers)
     compound2_dai = round(100*get_supply_rates("CompoundV2", "DAI", r.json()),2)
     dydx = round(100*get_supply_rates("dYdX", "DAI", r.json()),2)
-    lever = round(100*get_supply_rates("Lever", "DAI", r.json()),2)
+    #lever = round(100*get_supply_rates("Lever", "DAI", r.json()),2)
     
     c = DataPoint(date=datetime.datetime.now(), value=compound2_dai, name="Compound")
     d = DataPoint(date=datetime.datetime.now(), value=dydx, name="dYdX")
-    e = DataPoint(date=datetime.datetime.now(), value=lever, name="Dharma Lever")
+    #e = DataPoint(date=datetime.datetime.now(), value=lever, name="Dharma Lever")
 
 
-    dipor = round(((compound2_dai+dydx+lever)/3.0),2)
+    dipor = round(((compound2_dai+dydx)/2.0),2)
 
     dipor2 = DataPoint(date=datetime.datetime.now(), value=dipor, name="Dipor")
     
-    last = DataPoint.query.filter(DataPoint.name=="Dharma Lever").order_by(DataPoint.date.desc())[0].date
+    last = DataPoint.query.filter(DataPoint.name=="Compound").order_by(DataPoint.date.desc())[0].date
     if(datetime.datetime.now().strftime('%Y-%m-%d')==last.strftime('%Y-%m-%d')):
         db.session.rollback()
         return json.dumps({'Already existing':True}), 200, {'ContentType':'application/json'}
     else:
         db.session.add(c)
         db.session.add(d)
-        db.session.add(e)
 
         db.session.add(dipor2)
         db.session.commit()
@@ -130,7 +129,9 @@ def data():
 
 import os 
 
-print("PORT:"+str(os.environ["PORT"]))
 
 if __name__=='__main__':
-    app.run(host='0.0.0.0',port=int(os.environ['PORT']))
+    app.run(host='0.0.0.0',
+            port=int(os.getenv('PORT',"5000")),
+            debug=os.getenv('DEBUG', False)
+                )
