@@ -65,10 +65,9 @@ def charts():
     for k in kek:
         dates.append(k.date.strftime('%Y-%m-%d'))
         dvalues.append(k.value)
-    d = ["x"] + sorted(dates)
-    v = ["Dharma Lever"] + dvalues
-    
-    kek = DataPoint.query.filter(DataPoint.name=="Compound")
+    d = ["x"] + (dates)
+   
+    kek = DataPoint.query.order_by(DataPoint.id).filter(DataPoint.name=="Compound")
     dates = []
     dvalues = []
     for k in kek:
@@ -76,25 +75,7 @@ def charts():
         dvalues.append(k.value)
     c = ["Compound"] + dvalues
     
-    kek = DataPoint.query.filter(DataPoint.name=="dYdX")
-    dates = []
-    dvalues = []
-    for k in kek:
-        dates.append(k.date.strftime('%Y-%m-%d'))
-        dvalues.append(k.value)
-    dx = ["dYdX"] + dvalues
-
-
-
-    kek = DataPoint.query.filter(DataPoint.name=="Dipor")
-    dates = []
-    dvalues = []
-    for k in kek:
-        dates.append(k.date.strftime('%Y-%m-%d'))
-        dvalues.append(k.value)
-    dipor = ["Dipor"] + dvalues
-    
-    return render_template("charts.html", xdates=d, dharma_values=v, compound_values=c, dydx_values=dx, dipor_values=dipor)
+    return render_template("charts.html", xdates=d,  compound_values=c)
 
 
 @app.route("/process")
