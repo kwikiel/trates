@@ -9,9 +9,22 @@ import datetime
 import psycopg2
 
 from sqlalchemy import create_engine
+#cache setup 
+from flask_caching import Cache
+
+config = {
+    "DEBUG": True,          # some Flask specific configs
+    "CACHE_TYPE": "simple", # Flask-Caching related configs
+    "CACHE_DEFAULT_TIMEOUT": 300
+}
+
 
 app = Flask(__name__)
 #TODO move this key to ENV 
+
+app.config.from_mapping(config)
+cache = Cache(app)
+
 
 app.config['SQLALCHEMY_DATABASE_URI']='postgres://mkiizzsexpqbeb:853ead1f17f3dc191da7a0149c247920e39f8e0f7d89402dce983ae2af478fe1@ec2-54-235-114-242.compute-1.amazonaws.com:5432/d553bngfbfj4ov'
 engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
@@ -43,8 +56,8 @@ def raw_sql(query):
     for r in rs:
         result.append(r)
     return result 
-
 @app.route('/')
+@cache.cached(timeout=50)
 def hello_world():
     r = requests.get("https://ethgasstation.info/json/ethgasAPI.json")
 
@@ -56,6 +69,7 @@ def hello_world():
     return render_template('index.html',rates=rates, safe_low_price = safe_low_price)
 
 @app.route('/charts')
+@cache.cached(timeout=50)
 def charts():
     
     # This is for data points
@@ -77,6 +91,10 @@ def charts():
     
     return render_template("charts.html", xdates=d,  compound_values=c)
 
+
+@app.route("/loaderio-b8661169a16b9c814aaf0ac212fe462f.html")
+def check_token():
+    return "loaderio-b8661169a16b9c814aaf0ac212fe462f"
 
 @app.route("/process")
 def data():
