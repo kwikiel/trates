@@ -59,7 +59,7 @@ def hello_world():
 def charts():
     
     # This is for data points
-    kek = DataPoint.query.filter(DataPoint.name=="Compound")
+    kek = DataPoint.query.order_by(DataPoint.id).filter(DataPoint.name=="Compound")
     dates = []
     dvalues = []
     for k in kek:
