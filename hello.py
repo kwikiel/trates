@@ -15,7 +15,7 @@ from flask_caching import Cache
 config = {
     "DEBUG": True,          # some Flask specific configs
     "CACHE_TYPE": "simple", # Flask-Caching related configs
-    "CACHE_DEFAULT_TIMEOUT": 300
+    "CACHE_DEFAULT_TIMEOUT": 50
 }
 
 
@@ -61,7 +61,7 @@ def raw_sql(query):
 def hello_world():
     r = requests.get("https://ethgasstation.info/json/ethgasAPI.json")
 
-    safe_low_price = float(int(float(r.json()["safeLowWait"])))/10.0
+    safe_low_price = round(float((r.json()["safeLow"]/10)),2)
     rates = raw_sql('SELECT name,value FROM data_point \
                       ORDER BY date DESC, value DESC \
                       LIMIT (SELECT COUNT(DISTINCT name) FROM data_point)')
