@@ -72,7 +72,7 @@ LIMIT 3; ")
 def charts():
     
     # This is for data points
-    kek = DataPoint.query.order_by(DataPoint.id).filter(DataPoint.name=="Compound")
+    kek = DataPoint.query.order_by(DataPoint.id).filter(DataPoint.name=="safeLow")
     dates = []
     dvalues = []
     for k in kek:
@@ -80,13 +80,13 @@ def charts():
         dvalues.append(k.value)
     d = ["x"] + (dates)
    
-    kek = DataPoint.query.order_by(DataPoint.id).filter(DataPoint.name=="Compound")
+    kek = DataPoint.query.order_by(DataPoint.id).filter(DataPoint.name=="safeLow")
     dates = []
     dvalues = []
     for k in kek:
         dates.append(k.date.strftime('%Y-%m-%d'))
         dvalues.append(k.value)
-    c = ["Compound"] + dvalues
+    c = ["safeLow"] + dvalues
     
     return render_template("charts.html", xdates=d,  compound_values=c)
 
