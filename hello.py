@@ -1,4 +1,3 @@
-#!/usr/bin/python
 
 from flask import Flask
 from flask import render_template
@@ -62,9 +61,9 @@ def hello_world():
     r = requests.get("https://ethgasstation.info/json/ethgasAPI.json")
 
     safe_low_price = round(float((r.json()["safeLow"]/10)),2)
-    rates = raw_sql('SELECT name,value FROM data_point \
-                      ORDER BY date DESC, value DESC \
-                      LIMIT (SELECT COUNT(DISTINCT name) FROM data_point)')
+    rates = raw_sql("SELECT DISTINCT name, value, date FROM data_point \
+ORDER BY Date desc \
+LIMIT 3; ")
    
     return render_template('index.html',rates=rates, safe_low_price = safe_low_price)
 
@@ -95,6 +94,18 @@ def charts():
 @app.route("/loaderio-b8661169a16b9c814aaf0ac212fe462f.html")
 def check_token():
     return "loaderio-b8661169a16b9c814aaf0ac212fe462f"
+
+@app.route("/process_gas")
+def data_gas():
+    r = requests.get("https://ethgasstation.info/json/ethgasAPI.json")
+    gas_fee = r.json()["safeLow"]/10
+
+    d = DataPoint(date=datetime.datetime.now(), value = gas_fee, name = "safeLow")
+    db.session.add(d)
+    db.session.commit()
+
+    return "200"
+
 
 @app.route("/process")
 def data():
