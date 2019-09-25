@@ -72,7 +72,7 @@ LIMIT 3; ")
 def charts():
     
     # This is for data points
-    kek = DataPoint.query.order_by(DataPoint.id).filter(DataPoint.name=="safeLow")
+    kek = DataPoint.query.order_by(DataPoint.id).filter(DataPoint.name=="Compound")
     dates = []
     dvalues = []
     for k in kek:
@@ -80,13 +80,13 @@ def charts():
         dvalues.append(k.value)
     d = ["x"] + (dates)
    
-    kek = DataPoint.query.order_by(DataPoint.id).filter(DataPoint.name=="safeLow")
+    kek = DataPoint.query.order_by(DataPoint.id).filter(DataPoint.name=="Compound")
     dates = []
     dvalues = []
     for k in kek:
         dates.append(k.date.strftime('%Y-%m-%d'))
         dvalues.append(k.value)
-    c = ["safeLow"] + dvalues
+    c = ["Compound Supply rate (%)"] + dvalues
     
     return render_template("charts.html", xdates=d,  compound_values=c)
 
@@ -106,6 +106,23 @@ def data_gas():
 
     return "200"
 
+@app.route("/gas_chart")
+def create_gas_chart():
+    fbq = DataPoint.query.filter(DataPoint.name=="safeLow").order_by(DataPoint.date)
+    y = []
+    x = []
+    for f in fbq:
+        x.append(f.id)
+        y.append(f.value)
+    plt.plot(x,y)
+    plt.ylabel('Gas Price (Gwei)')
+    plt.xticks(rotation=45)
+    plt.title("Gas price history ( 10 minute ticks)")
+    plt.axhline(y=22, linestyle='-',color='red')
+    plt.axhline(y=10, linestyle='-',color='blue')
+    plt.axhline(y=3.5, linestyle='-',color='green')
+    plt.legend(['Safe Low History','Fast','Standard','Safe Low'])
+    plt.savefig('static/gas.png',dpi=300,bbox_inches='tight')
 
 @app.route("/process")
 def data():
