@@ -11,6 +11,10 @@ from sqlalchemy import create_engine
 #cache setup 
 from flask_caching import Cache
 
+import matplotlib as mpl
+mpl.use('Agg')
+import matplotlib.pyplot as plt
+
 config = {
     "DEBUG": True,          # some Flask specific configs
     "CACHE_TYPE": "simple", # Flask-Caching related configs
@@ -22,6 +26,7 @@ app = Flask(__name__)
 #TODO move this key to ENV 
 
 app.config.from_mapping(config)
+
 cache = Cache(app)
 
 
@@ -62,6 +67,7 @@ def hello_world():
 
     safe_low_price = round(float((r.json()["safeLow"]/10)),2)
     rates = raw_sql("SELECT DISTINCT name, value, date FROM data_point \
+            WHERE name in ('Compound','dYdX') \
 ORDER BY Date desc \
 LIMIT 3; ")
    
@@ -123,6 +129,7 @@ def create_gas_chart():
     plt.axhline(y=3.5, linestyle='-',color='green')
     plt.legend(['Safe Low History','Fast','Standard','Safe Low'])
     plt.savefig('static/gas.png',dpi=300,bbox_inches='tight')
+    return "ok"
 
 @app.route("/process")
 def data():
@@ -161,5 +168,5 @@ import os
 if __name__=='__main__':
     app.run(host='0.0.0.0',
             port=int(os.getenv('PORT',"5000")),
-            debug=os.getenv('DEBUG', False)
-                )
+            debug=os.getenv('DEBUG', False),
+            threaded = True)
