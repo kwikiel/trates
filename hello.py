@@ -6,11 +6,12 @@ import json
 import requests
 import datetime
 import psycopg2
-
+import os
 from sqlalchemy import create_engine
 #cache setup 
 from flask_caching import Cache
 
+#This trick is to render charts without X server 
 import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
@@ -29,8 +30,9 @@ app.config.from_mapping(config)
 
 cache = Cache(app)
 
-
-app.config['SQLALCHEMY_DATABASE_URI']='postgres://mkiizzsexpqbeb:853ead1f17f3dc191da7a0149c247920e39f8e0f7d89402dce983ae2af478fe1@ec2-54-235-114-242.compute-1.amazonaws.com:5432/d553bngfbfj4ov'
+#Environment variables secret
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("SQLALCHEMY_DATABASE_URI")
+app.config["LOANSCAN_API"] = os.getenv("LOANSCAN_API")
 engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
 db = SQLAlchemy(app)
 
@@ -96,7 +98,7 @@ def charts():
     
     return render_template("charts.html", xdates=d,  compound_values=c)
 
-
+#Key above isn't a secret - it's just verification for load test
 @app.route("/loaderio-b8661169a16b9c814aaf0ac212fe462f.html")
 def check_token():
     return "loaderio-b8661169a16b9c814aaf0ac212fe462f"
@@ -133,7 +135,7 @@ def create_gas_chart():
 
 @app.route("/process")
 def data():
-    headers = {"content-type": "application/json", "x-api-key":"KQUl7wEC9y8UTIU30zR71670L5iKpVl18XFD5Iqd"}
+    headers = {"content-type": "application/json", "x-api-key":app.config["LOANSCAN_API"]}
 
     r = requests.get("https://api.loanscan.io/v1/interest-rates", headers=headers)
     compound2_dai = round(100*get_supply_rates("CompoundV2", "DAI", r.json()),2)
