@@ -22,6 +22,37 @@ config = {
     "CACHE_DEFAULT_TIMEOUT": 50
 }
 
+platforms = ['Nuo',
+             'CoinList',
+             'Compound',
+             'CompoundV2',
+             'MakerDao',
+             'Poloniex',
+             'Bitfinex',
+             'Celsius',
+             'dYdX',
+             'Nexo',
+             'BlockFi',
+             'Wealthfront',
+             'Betterment',
+             'SoFi',
+             'CryptoCom',
+             'Marcus',
+             'Soda',
+             'Coinbase',
+             'SaltLending',
+             'PersonalCapital',
+             'Fulcrum',
+             'Linen',
+             'Dharma',
+             'Lendingblock',
+             'Hodlonaut',
+             'InstaDapp',
+             'DeFiSaver',
+             'Zerion',
+             'Argent']
+
+stablecoins = ["DAI", "TUSD", "USDT", "USDC", "GUSD", "USD"]
 
 app = Flask(__name__)
 #TODO move this key to ENV 
@@ -64,16 +95,21 @@ def raw_sql(query):
     return result 
 @app.route('/')
 @cache.cached(timeout=50)
-def hello_world():
-    r = requests.get("https://ethgasstation.info/json/ethgasAPI.json")
+def index():
+    headers = {"content-type": "application/json", "x-api-key":app.config["LOANSCAN_API"]}
+    r = requests.get("https://api.loanscan.io/v1/interest-rates", headers=headers)
+    rates = r.json()
 
-    safe_low_price = round(float((r.json()["safeLow"]/10)),2)
-    rates = raw_sql("SELECT DISTINCT name, value, date FROM data_point \
-            WHERE name in ('Compound','dYdX') \
-ORDER BY Date desc \
-LIMIT 3; ")
+    trackato = []
+    for p in platforms:
+        for s in stablecoins:
+            if get_supply_rates(p,str(s),rates)!=None:
+                trackato.append([p,s,get_supply_rates(p,str(s),rates)])
+
+    trackato = sorted(trackato, key=lambda x:x[2], reverse=True)
+
    
-    return render_template('index.html',rates=rates, safe_low_price = safe_low_price)
+    return render_template('index.html',trackato=trackato)
 
 @app.route('/charts')
 @cache.cached(timeout=50)
