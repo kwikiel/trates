@@ -49,7 +49,7 @@ platforms = ['Nuo', 'CoinList','Compound','CompoundV2',
              'Zerion',
              'Argent']
 
-stablecoins = ["DAI", "TUSD", "USDT", "USDC", "GUSD", "USD"]
+stablecoins = ["DAI", "TUSD", "USDT", "USDC", "GUSD", "USD", "SAI"]
 
 app = Flask(__name__)
 
