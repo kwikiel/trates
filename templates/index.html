@@ -16,7 +16,7 @@
 
 <style>
 body {
-background-color: #F8FAFC;
+ background-color: #cca784; !important
 	line-height: 1.6;
 	font-family: 'Questrial', sans-serif;
 	font-size: 30px;
@@ -53,9 +53,14 @@ padding: 50px;
 	<h1>Track interest rates (DAI)</h1>
 
 <table>
+  <tr style="background-color: cadetblue;">
+    <th>Project</th>
+    <th>Token</th>
+    <th>Rate</th>
+  </tr>
 {% for item in trackato %}
 <tr>
-<th><b>{{ item[0] }} </b> </th> <th>{{ item[1] }} </th> <th>{{ (100*item[2])|round(2)   }} %</th>
+<th>  <b>{{ item[0] }} </b> </th> <th> {{ item[1] }} </th> <th>{{ (100*item[2])|round(2)   }} %</th>
 </tr>
 {% endfor %} 
 
