@@ -1,8 +1,9 @@
-
 import matplotlib.pyplot as plt
-from flask import Flask
+from flask import Flask, request
 from flask import render_template
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+
 import json
 import requests
 import datetime
@@ -62,6 +63,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("SQLALCHEMY_DATABASE_URI")
 app.config["LOANSCAN_API"] = os.getenv("LOANSCAN_API")
 engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+
 
 
 class DataPoint(db.Model):
@@ -72,6 +75,13 @@ class DataPoint(db.Model):
 
     def __repr__(self):
         return "<#{id} {date} {name}:  {value}>".format(id=self.id, date=self.date, name=self.name, value=self.value)
+
+class Suggestion(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    comment = db.Column(db.String(280))
+
+    def __repr__(self):
+        return "<{id} {comment}>".format(id=self.id, comment=self.comment)
 
 
 def get_supply_rates(provider, symbol, data):
@@ -95,7 +105,6 @@ def raw_sql(query):
 
 
 @app.route('/')
-@cache.cached(timeout=300)
 def index():
     headers = {"content-type": "application/json",
                "x-api-key": app.config["LOANSCAN_API"]}
@@ -115,6 +124,16 @@ def index():
     trackato = sorted(trackato, key=lambda x: x[2], reverse=True)
 
     return render_template('index.html', trackato=trackato)
+
+@app.route('/result', methods=["GET", "POST"])
+def display():
+    if request.method == 'POST':
+        result = request.form["suggestion"]
+        s = Suggestion(comment=result)
+        db.session.add(s)
+        db.session.commit()
+        comments = Suggestion.query.all()
+        return render_template("result.html",result = comments)
 
 
 @app.route('/charts')
@@ -158,8 +177,6 @@ def data_gas():
     db.session.commit()
 
     return "200"
-
-
 @app.route("/gas_chart")
 def create_gas_chart():
     fbq = DataPoint.query.filter(
@@ -179,7 +196,6 @@ def create_gas_chart():
     plt.legend(['Safe Low History', 'Fast', 'Standard', 'Safe Low'])
     plt.savefig('static/gas.png', dpi=300, bbox_inches='tight')
     return "ok"
-
 
 @app.route("/process")
 def data():
