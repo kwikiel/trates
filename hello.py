@@ -134,6 +134,9 @@ def display():
         db.session.commit()
         comments = Suggestion.query.all()
         return render_template("result.html",result = comments)
+    else:
+        comments = Suggestion.query.all()
+        return render_template("result.html",result = comments)
 
 
 @app.route('/charts')
