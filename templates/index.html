@@ -1,94 +1,96 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<link href="https://fonts.googleapis.com/css?family=VT323&display=swap" rel="stylesheet">
 
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-142594305-1"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-142594305-1"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootswatch/4.4.1/lux/bootstrap.min.css" rel="stylesheet" integrity="sha384-oOs/gFavzADqv3i5nCM+9CzXe3e5vXLXZ5LZ7PplpsWpTCufB7kqkTlC9FtZ5nJo" crossorigin="anonymous">
+    <script>
+        window.dataLayer = window.dataLayer || [];
 
-  gtag('config', 'UA-142594305-1');
-</script>
-<link href="https://fonts.googleapis.com/css?family=Questrial&display=swap" rel="stylesheet">
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
 
-<style>
-body {
- background-color: #cca784; !important
-	line-height: 1.6;
-	font-family: 'Questrial', sans-serif;
-	font-size: 30px;
-  );
-  height: 100vh;
-}
-
-.card {
-margin: 20px;
-padding: 50px;
-	background-color: white;
-	/* Add shadows to create the "card" effect */
-  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-  transition: 0.3s;
-}
-
-/* On mouse-over, add a deeper shadow */
-.card:hover {
-  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
-}
-
-/* Add some padding inside the card container */
-.container {
-  padding: 2px 16px;
-}
-</style>
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/yegor256/tacit@gh-pages/tacit-css-1.5.1.min.css"/>
-
-  </head>
+        gtag('config', 'UA-142594305-1');
+    </script>
+    <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet">
+    <style>
+        div {
+            font-family: 'Inter', sans-serif !important;
+        }
+    </style>
+</head>
 
 <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="#">Trackato</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-<div class="card">
-	<h1>Track interest rates (DAI)</h1>
+        <div class="collapse navbar-collapse" id="navbarColor01">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Trackato <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Historical rates</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Pricing</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="https://www.ft.com/content/16db565a-25a1-11ea-9305-4234e74b0ef3">About</a>
+                </li>
+            </ul>
+    </nav>
+    </div>
 
-<table>
-  <tr style="background-color: cadetblue;">
-    <th>Project</th>
-    <th>Token</th>
-    <th>Rate</th>
-  </tr>
-{% for item in trackato %}
-<tr>
-<th>  <b>{{ item[0] }} </b> </th> <th> {{ item[1] }} </th> <th>{{ (100*item[2])|round(2)   }} %</th>
-</tr>
-{% endfor %} 
-
-</table>
-<a href="/charts">Interest rates chart</a>
-
-</div>
-<br>
-<div class="card">
-
-<h1>Safe Low Gas Price</h1> 
-
-{{ safe_low_price}} Gwei </br>
-
-</div>
-
-
-<a href="https://trackato.substack.com/">Subscribe to the DeFi focused newsletter</a></br>
-
-
-<i>Things above are experimental - standard disclaimer apply <i>
+    <div class="container">
 
 
 
+        <blockquote class="blockquote">
+            <p class="mb-0">good tracker for current USD yield opportunities</p>
+            <footer class="blockquote-footer">Degen Spartan <cite title="Source Title">from CT</cite></footer>
+        </blockquote>
 
-<footer>
-Data provided <a href="https://loanscan.io"></br>Loanscan DeFI API </a>
-</footer>
 
+
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Project</th>
+                    <th scope="col">Token</th>
+                    <th scope="col">Rate</th>
+                    <th scope="col">Invest</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                {% for item in trackato %}
+                <tr class="table">
+                    <th scope="row">{{ item[0]}}</th>
+                    <td> {{ item[1] }} </td>
+                    <td> {{ (item[2]*100)|round(2) }}% </td>
+                    <td>
+                        {% if item[0]=="RealT" %}
+
+                        <a href="https://realt.co/?ref=spike" class="btn btn-info" role="button">Invest</a> {% else %} {% endif %} {% if item[0]=="Bitfinex" %}
+
+                        <a href="https://www.coinlend.org/?referral=0B635O" class="btn btn-info" role="button">Invest</a> {% else %} {% endif %}
+
+
+
+                    </td>
+                </tr>
+                {% endfor %}
+
+            </tbody>
+        </table>
+
+    </div>
 </body>
-</html>
