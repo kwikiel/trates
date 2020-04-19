@@ -16,11 +16,6 @@ from flask_caching import Cache
 
 # This trick is to render charts without X server
 
-config = {
-    "DEBUG": True,          # some Flask specific configs
-    "CACHE_TYPE": "simple",  # Flask-Caching related configs
-    "CACHE_DEFAULT_TIMEOUT": 50
-}
 
 platforms = ['Nuo', 'CoinList','Compound','CompoundV2',
              'MakerDao',
@@ -52,15 +47,6 @@ platforms = ['Nuo', 'CoinList','Compound','CompoundV2',
 stablecoins = ["DAI", "TUSD", "USDT", "USDC", "GUSD", "USD", "SAI"]
 
 app = Flask(__name__)
-
-app.config.from_mapping(config)
-
-cache = Cache(app)
-
-
-
-
-
 
 def get_supply_rates(provider, symbol, data):
     for i in data:
@@ -127,5 +113,4 @@ def api_main():
 if __name__ == '__main__':
     app.run(host='0.0.0.0',
             port=int(os.getenv('PORT', "5000")),
-            debug=os.getenv('DEBUG', False),
-            threaded=True)
+            debug=os.getenv('DEBUG', False))
