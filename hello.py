@@ -42,7 +42,7 @@ platforms = ['Nuo', 'CoinList','Compound','CompoundV2',
              'InstaDapp',
              'DeFiSaver',
              'Zerion',
-             'Argent'
+             'Argent',
              'AaveStable'
              ]
 
