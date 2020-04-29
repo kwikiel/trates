@@ -110,7 +110,7 @@ def api_main():
     for t in trackato:
         print(t[0],t[1],t[2])
         beauty[t[0]+"#"+t[1]] = t[2]
-    return jsonify(beauty)
+    return jsonify([beauty])
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0',
